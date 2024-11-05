@@ -1,7 +1,11 @@
 #define lineSensor1 A0
 #define lineSensor2 A1
+#define EN1 9
+#define EN2 5
 #define IN1 10
 #define IN2 11
+#define IN3 3
+#define IN4 4
 
 int lineSensor1Value = 0;
 int lineSensor2Value = 0;
@@ -25,6 +29,10 @@ void setup()
 
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
+  pinMode(EN1, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(EN2, OUTPUT);
 }
 
 void loop() 
@@ -45,7 +53,7 @@ void loop()
   
   Serial.println(robotDistance);
 
-  if(robotDistance < 20){
+  if(robotDistance < 50){
     attack();
   } else{stop();};
   
@@ -68,10 +76,25 @@ float attack()
 {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
+  digitalWrite(EN1, 55);
+
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  digitalWrite(EN2, 55);
+  Serial.println("Baixo vapor!");
+  
+  if(robotDistance < 15)
+  {
+    digitalWrite(EN1, 255);
+    digitalWrite(EN2, 255);
+    Serial.println("Todo vapor!");
+  } 
 }
 
 float stop()
 {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
 }
