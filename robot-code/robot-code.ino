@@ -57,7 +57,7 @@ void loop()
     attack();
   } else{stop();};
   
-  delay(2000);
+  delay(100);
 }
 
 float distance(int trigger, int eco) 
@@ -74,21 +74,21 @@ float distance(int trigger, int eco)
 
 float attack()
 {
+if (robotDistance > 20 && robotDistance < 50) {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
-  digitalWrite(EN1, 55);
+  analogWrite(EN1, 100);
 
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  digitalWrite(EN2, 55);
+  analogWrite(EN2, 100);
   Serial.println("Baixo vapor!");
-  
-  if(robotDistance < 15)
-  {
-    digitalWrite(EN1, 255);
-    digitalWrite(EN2, 255);
-    Serial.println("Todo vapor!");
-  } 
+} 
+else if (robotDistance <= 20) {
+  digitalWrite(EN1, 255);
+  digitalWrite(EN2, 255);
+  Serial.println("Todo vapor!");
+}
 }
 
 float stop()
