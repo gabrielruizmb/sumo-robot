@@ -1,11 +1,11 @@
 #define lineSensor1 A0
 #define lineSensor2 A1
 #define EN1 9
-#define EN2 5
+#define EN2 4
 #define IN1 10
 #define IN2 11
-#define IN3 3
-#define IN4 4
+#define IN3 5
+#define IN4 3
 
 int lineSensor1Value = 0;
 int lineSensor2Value = 0;
@@ -74,27 +74,29 @@ float distance(int trigger, int eco)
 
 float attack()
 {
-if (robotDistance > 20 && robotDistance < 50) {
+if (robotDistance > 15 && robotDistance < 50) {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
   analogWrite(EN1, 100);
 
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
   analogWrite(EN2, 100);
-  Serial.println("Baixo vapor!");
+  //Serial.println("Baixo vapor!");
 } 
-else if (robotDistance <= 20) {
-  digitalWrite(EN1, 255);
-  digitalWrite(EN2, 255);
-  Serial.println("Todo vapor!");
+if (robotDistance <= 15) {
+  analogWrite(EN1, 255);
+  analogWrite(EN2, 255);
+  //Serial.println("Todo vapor!");
 }
 }
 
 float stop()
 {
-  digitalWrite(IN1, LOW);
+  analogWrite(EN1, 0);
+  analogWrite(EN2, 0);
+  /*digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
+  digitalWrite(IN4, LOW);*/
 }
