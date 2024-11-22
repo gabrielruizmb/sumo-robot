@@ -1,30 +1,33 @@
-#define lineSensor1 A0
-#define lineSensor2 A1
-#define EN1 9
-#define EN2 4
-#define IN1 10
-#define IN2 11
-#define IN3 5
-#define IN4 3
+#define backLineSensor A0  //Porta analógica do sensor dianteiro
+#define frontLineSensor A1  //Porta analógica do sensor traseiro
+#define EN1 9           //Porta enable do motor esquerdo
+#define EN2 4           //Porta enable do motor direito
+#define IN1 10          //Porta 1 do motor esquerdo
+#define IN2 11          //Porta 2 do motor esquerdo
+#define IN3 5           //Porta 1 do motor direito
+#define IN4 3           //Porta 2 do motor direito
 
-int lineSensor1Value = 0;
-int lineSensor2Value = 0;
+int backLineSensorValue = 0;  //Armazena o valor lido pelo sensor de linha
+int frontLineSensorValue = 0;  //Armazena o valor lido pelo sensor de linha
 
-int trigger = 6;
-int eco = 7;
-float robotDistance;
+int trigger = 6;      //Porta do gatilho do sensor ultra-sônico
+int eco = 7;          //Porta da escuta do sensor ultra-sônico
+float robotDistance;  //Armazena a distância captada pelo sensor
 
-float distance(int trigger, int eco);
-float attack();
+float distance(int trigger, int eco);  //Função que retorna a distância media pelo sensor
+void scan();
+void attack();  //Faz o robô avançar quando o sensor identificar algo próximo.
+void stop();
+void retreat();
 
 void setup() 
 {
   // put your setup code here, to run once:
 
-  Serial.begin(9600);
- 
-  pinMode(lineSensor1, INPUT);
-  pinMode(lineSensor2, INPUT);
+  Serial.begin(9600);  //Inícia o monitor serial
+
+  pinMode(backLineSensor, INPUT);
+  pinMode(frontLineSensor, INPUT);
   pinMode(trigger, OUTPUT);
 
   pinMode(IN1, OUTPUT);
@@ -39,25 +42,29 @@ void loop()
 {
   // put your main code here, to run repeatedly:
 
-  // Se estiver dentro da pista o valor é maior que 800, na linha menor que 600
-//  Serial.print("Valor do sensor 1: ");
-//  Serial.println(lineSensor1Value);
-//
-//  Serial.print("Valor do sensor 2: ");
-//  Serial.println(lineSensor2Value);
-
-  lineSensor1Value = analogRead(lineSensor1);
-  lineSensor2Value = analogRead(lineSensor2);
-
-  robotDistance = distance(trigger, eco);
+  //Lê os valores dos sensores de luz
+  backLineSensorValue = analogRead(backLineSensor);  
+  frontLineSensorValue = analogRead(frontLineSensor);
   
+  Serial.print("Valor do sensor 1: ");
+  Serial.println(backLineSensorValue);
+
+  Serial.print("Valor do sensor 2: ");
+  Serial.println(frontLineSensorValue);
+
+  robotDistance = distance(trigger, eco);  //Lê a distância captada pelo sensor ultra-sônico
+  Serial.print("Valor do sensor ultra-sônico: ");
   Serial.println(robotDistance);
 
-  if(robotDistance < 50){
+  scan();
+
+  if(backLineSensorValue < 700)
     attack();
-  } else{stop();};
+
+  if(frontLineSensorValue < 700)
+    retreat();
   
-  delay(100);
+  delay(500);  //Pausa de 100 milísegundos
 }
 
 float distance(int trigger, int eco) 
@@ -72,31 +79,55 @@ float distance(int trigger, int eco)
   return (pulseIn(eco, HIGH)*0.01723);
 }
 
-float attack()
+void scan()
 {
-if (robotDistance > 15 && robotDistance < 50) {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
-  analogWrite(EN1, 100);
 
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+  analogWrite(EN2, 50);
+  
+  //Sê o robô adversario estivar a menos de 50cm, então avançe
+  if(robotDistance < 50)
+  {
+    attack();
+  } else{stop();};  //Se não, pare
+}
+
+void attack()
+{
+if (robotDistance > 15) {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  analogWrite(EN1, 55);
   analogWrite(EN2, 100);
   //Serial.println("Baixo vapor!");
 } 
+
 if (robotDistance <= 15) {
-  analogWrite(EN1, 255);
+  analogWrite(EN1, 130);
   analogWrite(EN2, 255);
   //Serial.println("Todo vapor!");
 }
 }
 
-float stop()
+void stop()
 {
   analogWrite(EN1, 0);
   analogWrite(EN2, 0);
-  /*digitalWrite(IN1, LOW);
+}
+
+void retreat()
+{
+  digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
+  analogWrite(EN2, 30);
+
   digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);*/
+  digitalWrite(IN4, HIGH);
+  analogWrite(EN2, 50);
 }
