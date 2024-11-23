@@ -56,7 +56,7 @@ void loop()
   Serial.print("Valor do sensor ultra-sônico: ");
   Serial.println(robotDistance);
 
-  scan();
+  attack();
 
   if(backLineSensorValue < 700)
     attack();
@@ -64,7 +64,7 @@ void loop()
   if(frontLineSensorValue < 700)
     retreat();
   
-  delay(500);  //Pausa de 100 milísegundos
+  delay(100);  //Pausa de 100 milísegundos
 }
 
 float distance(int trigger, int eco) 
@@ -79,40 +79,27 @@ float distance(int trigger, int eco)
   return (pulseIn(eco, HIGH)*0.01723);
 }
 
-void scan()
-{
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
-
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-  analogWrite(EN2, 50);
-  
-  //Sê o robô adversario estivar a menos de 50cm, então avançe
-  if(robotDistance < 50)
-  {
-    attack();
-  } else{stop();};  //Se não, pare
-}
-
 void attack()
 {
-if (robotDistance > 15) {
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
 
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  analogWrite(EN1, 55);
-  analogWrite(EN2, 100);
-  //Serial.println("Baixo vapor!");
-} 
+  
+  if (robotDistance > 15) 
+  {
+    analogWrite(EN1, 55);
+    analogWrite(EN2, 100);
+    //Serial.println("Baixo vapor!");
+  } 
 
-if (robotDistance <= 15) {
-  analogWrite(EN1, 130);
-  analogWrite(EN2, 255);
-  //Serial.println("Todo vapor!");
-}
+  if (robotDistance <= 15) 
+  {
+    analogWrite(EN1, 135);
+    analogWrite(EN2, 150);
+    //Serial.println("Todo vapor!");
+  }
 }
 
 void stop()
@@ -123,11 +110,11 @@ void stop()
 
 void retreat()
 {
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-  analogWrite(EN2, 30);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  analogWrite(EN2, 50);
 
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
   analogWrite(EN2, 50);
 }
